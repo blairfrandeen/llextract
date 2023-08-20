@@ -26,9 +26,7 @@ def extract_text(html: str, method: str) -> str:  # type: ignore
     if method == "justext":
         paragraphs = justext.justext(html, justext.get_stoplist("English"))
 
-        for paragraph in paragraphs:
-            if not paragraph.is_boilerplate:
-                return paragraph.text
+        return "\n".join([para.text for para in paragraphs if not para.is_boilerplate])
 
     elif method == "full":
         md = html2text(html)
@@ -57,7 +55,7 @@ def print_stats(text):
     print(tabulate(stats, headers=["Metric", "Count"], tablefmt="presto"))
 
 
-if __name__ == "__main__":
+def cli():
     parser = argparse.ArgumentParser(description="Extract text from a URL")
     parser.add_argument("url", help="The URL to extract text from")
     parser.add_argument(
@@ -77,3 +75,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args)
+
+
+if __name__ == "__main__":
+    cli()

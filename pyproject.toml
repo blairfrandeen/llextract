@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "llextract"
+version = "0.1.0"
+description = "Extract text from web pages"
+authors = ["Blair Frandeen <blairfrandeen@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+html2text = "^2020.1.16"
+jusText = "^3.0.0"
+requests = "^2.28.1"
+tokenizers = "^0.13.3"
+tabulate = "^0.9.0"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+llextract = 'llextract.main:cli'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
