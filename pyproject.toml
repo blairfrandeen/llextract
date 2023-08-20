@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "llextract"
-version = "0.1.0"
+version = "0.2.0"
 description = "Extract text from web pages"
 authors = ["Blair Frandeen <blairfrandeen@gmail.com>"]
 
