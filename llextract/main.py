@@ -1,5 +1,7 @@
 import argparse
+import os
 import requests
+import time
 import sys
 
 
@@ -7,19 +9,6 @@ import justext
 from html2text import html2text
 from tabulate import tabulate
 from tokenizers import Tokenizer
-
-
-def main(args):
-    response = requests.get(args.url)
-    response.raise_for_status()
-
-    html = response.text
-
-    text = extract_text(html, args.method)
-    if args.stats:
-        print_stats(text)
-    else:
-        print(text)
 
 
 def extract_text(html: str, method: str) -> str:  # type: ignore
@@ -55,9 +44,38 @@ def print_stats(text):
     print(tabulate(stats, headers=["Metric", "Count"], tablefmt="presto"))
 
 
+def main(args):
+    inputs = []
+
+    # Take piped inputs from stdin
+    if not sys.stdin.isatty():
+        inputs.append(sys.stdin.read())
+
+    if not inputs and not args.inputs:
+        exit(0)
+
+    # For each input, decide if it's a URL to read, a file, or plain text
+    for arg in args.inputs:
+        if arg.startswith("http"):
+            response = requests.get(arg)
+            response.raise_for_status()
+            html = response.text
+            inputs.append(extract_text(html, args.method))
+        elif os.path.isfile(arg):
+            with open(arg) as fp:
+                inputs.append(fp.read())
+        else:
+            inputs.append(arg)
+
+    if args.stats:
+        print_stats("\n".join(inputs))
+    else:
+        print("\n".join(inputs))
+
+
 def cli():
     parser = argparse.ArgumentParser(description="Extract text from a URL")
-    parser.add_argument("url", help="The URL to extract text from")
+    parser.add_argument("inputs", nargs="*", help="URLs, files, or piped text")
     parser.add_argument(
         "--method",
         default="justext",
